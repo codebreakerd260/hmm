@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const insightRoutes = require('./routes/insightRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/insights', insightRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
