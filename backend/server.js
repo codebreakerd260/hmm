@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const analyticsRoutes = require('./routes/analyticsRoutes');
+
 const app = express();
 
 // Middleware
@@ -12,6 +14,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Creator Monetization Analytics API is running!');
 });
+
+app.use('/api/analytics', analyticsRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
