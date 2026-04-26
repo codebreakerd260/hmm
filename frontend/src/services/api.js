@@ -9,6 +9,14 @@ const apiClient = axios.create({
   },
 });
 
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const analyticsAPI = {
   getTopContent: () => apiClient.get('/analytics/top-content'),
   getTopPlatform: () => apiClient.get('/analytics/top-platform'),
@@ -21,4 +29,8 @@ export const analyticsAPI = {
 
 export const insightsAPI = {
   getInsights: () => apiClient.get('/insights'),
+};
+
+export const authAPI = {
+  login: (credentials) => apiClient.post('/auth/login', credentials),
 };

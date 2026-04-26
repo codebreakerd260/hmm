@@ -1,17 +1,29 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Content from './pages/Content';
 import Audience from './pages/Audience';
 import Insights from './pages/Insights';
-import { LayoutDashboard, Video, Users, Zap } from 'lucide-react';
+import Login from './pages/Login';
+import { LayoutDashboard, Video, Users, Zap, LogOut } from 'lucide-react';
 
-function App() {
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" />;
+};
+
+const DashboardLayout = ({ children }) => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
+
   return (
-    <Router>
-      <div className="flex min-h-screen bg-background text-foreground">
-        {/* Sidebar */}
-        <aside className="w-64 border-r border-border bg-card p-6 flex flex-col gap-6">
-          <div>
+    <div className="flex min-h-screen bg-background text-foreground">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-border bg-card p-6 flex flex-col gap-6 justify-between">
+        <div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">Nexus AI</h2>
             <p className="text-sm text-muted-foreground">Creator Analytics</p>
           </div>
@@ -34,18 +46,36 @@ function App() {
               Insights
             </Link>
           </nav>
-        </aside>
+        </div>
 
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/content" element={<Content />} />
-            <Route path="/audience" element={<Audience />} />
-            <Route path="/insights" element={<Insights />} />
-          </Routes>
-        </main>
-      </div>
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors font-medium w-full"
+        >
+          <LogOut size={20} />
+          Sign Out
+        </button>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        {children}
+      </main>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        
+        <Route path="/" element={<PrivateRoute><DashboardLayout><Dashboard /></DashboardLayout></PrivateRoute>} />
+        <Route path="/content" element={<PrivateRoute><DashboardLayout><Content /></DashboardLayout></PrivateRoute>} />
+        <Route path="/audience" element={<PrivateRoute><DashboardLayout><Audience /></DashboardLayout></PrivateRoute>} />
+        <Route path="/insights" element={<PrivateRoute><DashboardLayout><Insights /></DashboardLayout></PrivateRoute>} />
+      </Routes>
     </Router>
   );
 }

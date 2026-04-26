@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const insightRoutes = require('./routes/insightRoutes');
+const authRoutes = require('./routes/authRoutes');
+const authMiddleware = require('./middleware/auth');
 
 const app = express();
 
@@ -16,8 +18,9 @@ app.get('/', (req, res) => {
   res.send('Creator Monetization Analytics API is running!');
 });
 
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/insights', insightRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/analytics', authMiddleware, analyticsRoutes);
+app.use('/api/insights', authMiddleware, insightRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
